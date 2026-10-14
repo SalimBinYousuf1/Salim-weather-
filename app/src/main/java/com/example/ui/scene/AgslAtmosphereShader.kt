@@ -70,15 +70,23 @@ object AgslAtmosphereShader {
             float distToSun = length(fragCoord - celestialPos) / uResolution.y;
 
             if (uIsDay > 0.5) {
-                // Volumetric Sun Disc & Atmospheric Solar Rays
-                float sunDisc = smoothstep(0.065, 0.050, distToSun);
-                float sunGlow = exp(-distToSun * 4.2) * 0.65;
-                float angle = atan(fragCoord.y - celestialPos.y, fragCoord.x - celestialPos.x);
-                float rayPattern = sin(angle * 12.0 + uTime * 0.15) * 0.5 + 0.5;
-                float sunRays = rayPattern * exp(-distToSun * 2.8) * 0.28 * (1.0 - uCloudCover * 0.8);
+                // Photorealistic Optical Sun: Blinding specular core + Mie forward scattering bloom
+                float sunCore = smoothstep(0.038, 0.015, distToSun);
+                float sunInnerCorona = exp(-distToSun * 7.5) * 1.1;
+                float sunOuterBloom = exp(-distToSun * 2.4) * 0.55;
 
-                float3 sunColor = float3(1.0, 0.95, 0.75);
-                sky += (sunDisc * 1.6 + sunGlow + sunRays) * sunColor * uSunGlow * (1.0 - uCloudCover * 0.75);
+                // Subtle natural anamorphic lens flare
+                float flareY = abs(fragCoord.y - celestialPos.y) / uResolution.y;
+                float flareX = abs(fragCoord.x - celestialPos.x) / uResolution.x;
+                float lensStreak = exp(-flareY * 35.0) * exp(-flareX * 3.5) * 0.20;
+
+                float3 coreColor = float3(1.0, 1.0, 1.0);
+                float3 coronaColor = float3(1.0, 0.96, 0.82);
+                float3 bloomColor = float3(1.0, 0.90, 0.70);
+
+                float visibility = (1.0 - uCloudCover * 0.85);
+                float3 totalSun = (sunCore * 2.2 * coreColor + sunInnerCorona * coronaColor + (sunOuterBloom + lensStreak) * bloomColor) * uSunGlow * visibility;
+                sky += totalSun;
             } else {
                 // Night sky: twinkling star field
                 if (uv.y < 0.75) {

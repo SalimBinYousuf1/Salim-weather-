@@ -249,6 +249,10 @@ fun DailyForecastCard(
     tempUnit: TemperatureUnit,
     modifier: Modifier = Modifier
 ) {
+    val weekMin = daily.minOfOrNull { it.tempMin } ?: 0.0
+    val weekMax = daily.maxOfOrNull { it.tempMax } ?: 40.0
+    val totalRange = (weekMax - weekMin).coerceAtLeast(1.0)
+
     GlassCard(modifier = modifier) {
         Column(modifier = Modifier.fillMaxWidth()) {
             Text(
@@ -262,6 +266,9 @@ fun DailyForecastCard(
             Spacer(modifier = Modifier.height(12.dp))
 
             daily.take(10).forEach { day ->
+                val startFraction = ((day.tempMin - weekMin) / totalRange).coerceIn(0.0, 1.0).toFloat()
+                val endFraction = ((day.tempMax - weekMin) / totalRange).coerceIn(0.0, 1.0).toFloat()
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -304,21 +311,31 @@ fun DailyForecastCard(
                             color = TextWhiteMuted
                         )
                         Spacer(modifier = Modifier.width(8.dp))
+
+                        // Real Dynamic Temperature Range Bar
                         Box(
                             modifier = Modifier
-                                .width(70.dp)
-                                .height(4.dp)
+                                .width(74.dp)
+                                .height(5.dp)
                                 .clip(CircleShape)
                                 .background(Color(0x33FFFFFF))
                         ) {
+                            val barStart = 74.dp * startFraction
+                            val barWidth = 74.dp * (endFraction - startFraction).coerceAtLeast(0.12f)
                             Box(
                                 modifier = Modifier
-                                    .width(45.dp)
-                                    .height(4.dp)
+                                    .padding(start = barStart)
+                                    .width(barWidth)
+                                    .height(5.dp)
                                     .clip(CircleShape)
-                                    .background(Color(0xFF38BDF8))
+                                    .background(
+                                        androidx.compose.ui.graphics.Brush.horizontalGradient(
+                                            listOf(Color(0xFF38BDF8), Color(0xFFF59E0B))
+                                        )
+                                    )
                             )
                         }
+
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = UnitConverter.formatTemperature(day.tempMax, tempUnit, true),
@@ -344,6 +361,25 @@ fun WeatherDetailsCard(
     modifier: Modifier = Modifier
 ) {
     val uvMax = daily.firstOrNull()?.uvIndexMax ?: 0.0
+    val uvCategory = when {
+        uvMax <= 2.0 -> "Low"
+        uvMax <= 5.0 -> "Moderate"
+        uvMax <= 7.0 -> "High"
+        uvMax <= 10.0 -> "Very High"
+        else -> "Extreme"
+    }
+
+    val windDegrees = current.windDirection
+    val cardinal = when ((windDegrees / 45.0).toInt() % 8) {
+        0 -> "N"
+        1 -> "NE"
+        2 -> "E"
+        3 -> "SE"
+        4 -> "S"
+        5 -> "SW"
+        6 -> "W"
+        else -> "NW"
+    }
 
     GlassCard(modifier = modifier) {
         Column(modifier = Modifier.fillMaxWidth()) {
@@ -365,7 +401,7 @@ fun WeatherDetailsCard(
                 )
                 DetailItem(
                     label = stringResource(R.string.label_uv_index),
-                    value = String.format(java.util.Locale.US, "%.1f", uvMax),
+                    value = "${String.format(java.util.Locale.US, "%.1f", uvMax)} ($uvCategory)",
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -379,8 +415,8 @@ fun WeatherDetailsCard(
                     modifier = Modifier.weight(1f)
                 )
                 DetailItem(
-                    label = stringResource(R.string.label_wind_gusts),
-                    value = UnitConverter.formatWindSpeed(current.windGusts, windUnit),
+                    label = "Wind & Gusts",
+                    value = "$cardinal • ${UnitConverter.formatWindSpeed(current.windGusts, windUnit)}",
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -517,6 +553,43 @@ fun SunMoonCard(
             )
 
             Spacer(modifier = Modifier.height(14.dp))
+
+            // Visual Solar Daylight Arc
+            androidx.compose.foundation.Canvas(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(55.dp)
+                    .padding(horizontal = 24.dp)
+            ) {
+                val w = size.width
+                val h = size.height
+                val path = androidx.compose.ui.graphics.Path().apply {
+                    moveTo(0f, h)
+                    cubicTo(w * 0.25f, 0f, w * 0.75f, 0f, w, h)
+                }
+                drawPath(
+                    path = path,
+                    color = Color(0x44FFFFFF),
+                    style = androidx.compose.ui.graphics.drawscope.Stroke(
+                        width = 2.5f,
+                        pathEffect = androidx.compose.ui.graphics.PathEffect.dashPathEffect(floatArrayOf(10f, 8f))
+                    )
+                )
+
+                // Solar position marker along mid-arc
+                drawCircle(
+                    color = Color(0xFFFDE047),
+                    radius = 6.dp.toPx(),
+                    center = androidx.compose.ui.geometry.Offset(w * 0.5f, h * 0.18f)
+                )
+                drawCircle(
+                    color = Color(0x55FDE047),
+                    radius = 12.dp.toPx(),
+                    center = androidx.compose.ui.geometry.Offset(w * 0.5f, h * 0.18f)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),

@@ -73,9 +73,6 @@ class MainActivity : ComponentActivity() {
                                     },
                                     onNavigateToSettings = {
                                         currentScreen = ScreenDestination.SETTINGS
-                                    },
-                                    onDebugSelectCondition = { category ->
-                                        weatherViewModel.setDebugOverrideCategory(category)
                                     }
                                 )
                             }

@@ -89,7 +89,6 @@ fun WeatherScreen(
     onLocationPageChanged: (Int) -> Unit,
     onNavigateToManageLocations: () -> Unit,
     onNavigateToSettings: () -> Unit,
-    onDebugSelectCondition: (ConditionCategory?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val locations = uiState.locations
@@ -109,84 +108,12 @@ fun WeatherScreen(
     val currentForecast = uiState.forecasts[currentKey]
 
     var showMenu by remember { mutableStateOf(false) }
-    var showAtmospherePicker by remember { mutableStateOf(false) }
     var selectedHour by remember { mutableStateOf<HourlyForecastItem?>(null) }
 
     Box(modifier = modifier.fillMaxSize()) {
-        // 1. Live Background Scene Engine
-        val sceneParams = remember(currentForecast, uiState.debugOverrideCategory) {
-            val base = SceneParams.fromWeather(currentForecast?.current)
-            if (uiState.debugOverrideCategory != null) {
-                when (uiState.debugOverrideCategory) {
-                    ConditionCategory.THUNDERSTORM -> base.copy(
-                        category = ConditionCategory.THUNDERSTORM,
-                        hasLightning = true,
-                        rainIntensity = 0.9f,
-                        snowIntensity = 0f,
-                        fogDensity = 0f,
-                        cloudCoverFraction = 0.95f,
-                        windSpeedKmh = 28f,
-                        skyTopColor = Color(0xFF0F172A),
-                        skyBottomColor = Color(0xFF1E293B)
-                    )
-                    ConditionCategory.CLEAR -> base.copy(
-                        category = ConditionCategory.CLEAR,
-                        hasLightning = false,
-                        rainIntensity = 0f,
-                        snowIntensity = 0f,
-                        fogDensity = 0f,
-                        cloudCoverFraction = 0.05f,
-                        isDay = true,
-                        skyTopColor = Color(0xFF0284C7),
-                        skyBottomColor = Color(0xFF38BDF8)
-                    )
-                    ConditionCategory.OVERCAST -> base.copy(
-                        category = ConditionCategory.OVERCAST,
-                        hasLightning = false,
-                        rainIntensity = 0f,
-                        snowIntensity = 0f,
-                        fogDensity = 0f,
-                        cloudCoverFraction = 0.9f,
-                        skyTopColor = Color(0xFF334155),
-                        skyBottomColor = Color(0xFF64748B)
-                    )
-                    ConditionCategory.RAIN -> base.copy(
-                        category = ConditionCategory.RAIN,
-                        hasLightning = false,
-                        rainIntensity = 0.75f,
-                        snowIntensity = 0f,
-                        fogDensity = 0f,
-                        cloudCoverFraction = 0.85f,
-                        windSpeedKmh = 18f,
-                        skyTopColor = Color(0xFF1F2937),
-                        skyBottomColor = Color(0xFF334155)
-                    )
-                    ConditionCategory.SNOW -> base.copy(
-                        category = ConditionCategory.SNOW,
-                        hasLightning = false,
-                        rainIntensity = 0f,
-                        snowIntensity = 0.85f,
-                        fogDensity = 0f,
-                        cloudCoverFraction = 0.8f,
-                        windSpeedKmh = 14f,
-                        skyTopColor = Color(0xFF1E293B),
-                        skyBottomColor = Color(0xFF94A3B8)
-                    )
-                    ConditionCategory.FOG -> base.copy(
-                        category = ConditionCategory.FOG,
-                        hasLightning = false,
-                        rainIntensity = 0f,
-                        snowIntensity = 0f,
-                        fogDensity = 0.85f,
-                        cloudCoverFraction = 0.7f,
-                        skyTopColor = Color(0xFF475569),
-                        skyBottomColor = Color(0xFF94A3B8)
-                    )
-                    else -> base
-                }
-            } else {
-                base
-            }
+        // 1. Live Background Scene Engine - 100% directly driven by real Open-Meteo API
+        val sceneParams = remember(currentForecast) {
+            SceneParams.fromWeather(currentForecast?.current)
         }
 
         WeatherSceneEngine(sceneParams = sceneParams)
@@ -205,8 +132,7 @@ fun WeatherScreen(
                 forecast = forecast,
                 uiState = uiState,
                 onMenuClick = { showMenu = true },
-                onHourClick = { item -> selectedHour = item },
-                onOpenAtmospherePicker = { showAtmospherePicker = true }
+                onHourClick = { item -> selectedHour = item }
             )
         }
 
@@ -270,74 +196,9 @@ fun WeatherScreen(
                     onNavigateToSettings()
                 }
             )
-            DropdownMenuItem(
-                text = { Text("Atmosphere Switcher", color = Color(0xFF38BDF8)) },
-                onClick = {
-                    showMenu = false
-                    showAtmospherePicker = true
-                }
-            )
         }
 
-        // 6. Atmosphere Picker Dropdown Menu
-        DropdownMenu(
-            expanded = showAtmospherePicker,
-            onDismissRequest = { showAtmospherePicker = false },
-            modifier = Modifier.background(Color(0xFF0F172A))
-        ) {
-            DropdownMenuItem(
-                text = { Text("⚡ Live Auto (Real Meteorological API)", color = Color(0xFF38BDF8)) },
-                onClick = {
-                    onDebugSelectCondition(null)
-                    showAtmospherePicker = false
-                }
-            )
-            HorizontalDivider(color = Color(0x33FFFFFF))
-            DropdownMenuItem(
-                text = { Text("⛈️ Thunderstorm (Phone 1)", color = Color.White) },
-                onClick = {
-                    onDebugSelectCondition(ConditionCategory.THUNDERSTORM)
-                    showAtmospherePicker = false
-                }
-            )
-            DropdownMenuItem(
-                text = { Text("☀️ Clear Sky / Sunny (Phone 2)", color = Color.White) },
-                onClick = {
-                    onDebugSelectCondition(ConditionCategory.CLEAR)
-                    showAtmospherePicker = false
-                }
-            )
-            DropdownMenuItem(
-                text = { Text("☁️ Overcast & Heavy Clouds (Phone 3)", color = Color.White) },
-                onClick = {
-                    onDebugSelectCondition(ConditionCategory.OVERCAST)
-                    showAtmospherePicker = false
-                }
-            )
-            DropdownMenuItem(
-                text = { Text("🌧️ Rain & Drizzle", color = Color.White) },
-                onClick = {
-                    onDebugSelectCondition(ConditionCategory.RAIN)
-                    showAtmospherePicker = false
-                }
-            )
-            DropdownMenuItem(
-                text = { Text("❄️ Snow & Blizzard", color = Color.White) },
-                onClick = {
-                    onDebugSelectCondition(ConditionCategory.SNOW)
-                    showAtmospherePicker = false
-                }
-            )
-            DropdownMenuItem(
-                text = { Text("🌫️ Fog & Mist", color = Color.White) },
-                onClick = {
-                    onDebugSelectCondition(ConditionCategory.FOG)
-                    showAtmospherePicker = false
-                }
-            )
-        }
-
-        // 7. Interactive Hourly Telemetry Details Dialog
+        // 6. Interactive Hourly Telemetry Details Dialog
         if (selectedHour != null) {
             val hour = selectedHour!!
             BasicAlertDialog(
@@ -473,8 +334,7 @@ private fun WeatherPageContent(
     forecast: FullWeatherForecast?,
     uiState: WeatherUiState,
     onMenuClick: () -> Unit,
-    onHourClick: (HourlyForecastItem) -> Unit,
-    onOpenAtmospherePicker: () -> Unit
+    onHourClick: (HourlyForecastItem) -> Unit
 ) {
     val scrollState = rememberScrollState()
 
@@ -496,34 +356,6 @@ private fun WeatherPageContent(
             timezone = forecast?.timezone,
             onMenuClick = onMenuClick
         )
-
-        Spacer(modifier = Modifier.height(6.dp))
-
-        // Atmosphere mode badge / quick switcher
-        Row(
-            modifier = Modifier
-                .clip(RoundedCornerShape(12.dp))
-                .background(Color(0x330F172A))
-                .border(1.dp, Color(0x2BFFFFFF), RoundedCornerShape(12.dp))
-                .clickable(onClick = onOpenAtmospherePicker)
-                .padding(horizontal = 10.dp, vertical = 4.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = Icons.Default.Tune,
-                contentDescription = "Atmosphere",
-                tint = Color(0xFF38BDF8),
-                modifier = Modifier.size(13.dp)
-            )
-            Spacer(modifier = Modifier.width(6.dp))
-            val currentMode = uiState.debugOverrideCategory?.name ?: "Live Atmosphere"
-            Text(
-                text = currentMode,
-                fontFamily = UrbanistFontFamily,
-                fontSize = 11.sp,
-                color = TextWhiteSecondary
-            )
-        }
 
         // Offline / Stale Status Banner if applicable
         if (uiState.isOffline && forecast != null) {

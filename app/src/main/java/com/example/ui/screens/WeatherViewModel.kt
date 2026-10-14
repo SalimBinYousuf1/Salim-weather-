@@ -37,8 +37,7 @@ data class WeatherUiState(
     val isOffline: Boolean = false,
     val searchResults: List<WeatherLocation> = emptyList(),
     val isSearching: Boolean = false,
-    val userPreferences: UserPreferences = UserPreferences(),
-    val debugOverrideCategory: ConditionCategory? = null
+    val userPreferences: UserPreferences = UserPreferences()
 )
 
 class WeatherViewModel(application: Application) : AndroidViewModel(application) {
@@ -210,88 +209,10 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch { preferencesRepository.setRainAlertsEnabled(enabled) }
     }
 
-    fun setDebugOverrideCategory(category: ConditionCategory?) {
-        _uiState.update { it.copy(debugOverrideCategory = category) }
-    }
-
     fun clearCache() {
         viewModelScope.launch {
             repository.clearCache()
             refreshCurrentLocation(force = true)
-        }
-    }
-
-    fun getActiveSceneParams(forecast: FullWeatherForecast?): SceneParams {
-        val overrideCategory = _uiState.value.debugOverrideCategory
-        val baseParams = SceneParams.fromWeather(forecast?.current)
-        if (overrideCategory == null) return baseParams
-
-        return when (overrideCategory) {
-            ConditionCategory.THUNDERSTORM -> baseParams.copy(
-                category = ConditionCategory.THUNDERSTORM,
-                hasLightning = true,
-                rainIntensity = 0.9f,
-                snowIntensity = 0f,
-                fogDensity = 0f,
-                cloudCoverFraction = 0.95f,
-                windSpeedKmh = 28f,
-                skyTopColor = androidx.compose.ui.graphics.Color(0xFF0F172A),
-                skyBottomColor = androidx.compose.ui.graphics.Color(0xFF1E293B)
-            )
-            ConditionCategory.CLEAR -> baseParams.copy(
-                category = ConditionCategory.CLEAR,
-                hasLightning = false,
-                rainIntensity = 0f,
-                snowIntensity = 0f,
-                fogDensity = 0f,
-                cloudCoverFraction = 0.05f,
-                isDay = true,
-                skyTopColor = androidx.compose.ui.graphics.Color(0xFF0284C7),
-                skyBottomColor = androidx.compose.ui.graphics.Color(0xFF38BDF8)
-            )
-            ConditionCategory.OVERCAST -> baseParams.copy(
-                category = ConditionCategory.OVERCAST,
-                hasLightning = false,
-                rainIntensity = 0f,
-                snowIntensity = 0f,
-                fogDensity = 0f,
-                cloudCoverFraction = 0.9f,
-                skyTopColor = androidx.compose.ui.graphics.Color(0xFF334155),
-                skyBottomColor = androidx.compose.ui.graphics.Color(0xFF64748B)
-            )
-            ConditionCategory.RAIN -> baseParams.copy(
-                category = ConditionCategory.RAIN,
-                hasLightning = false,
-                rainIntensity = 0.75f,
-                snowIntensity = 0f,
-                fogDensity = 0f,
-                cloudCoverFraction = 0.85f,
-                windSpeedKmh = 18f,
-                skyTopColor = androidx.compose.ui.graphics.Color(0xFF1F2937),
-                skyBottomColor = androidx.compose.ui.graphics.Color(0xFF334155)
-            )
-            ConditionCategory.SNOW -> baseParams.copy(
-                category = ConditionCategory.SNOW,
-                hasLightning = false,
-                rainIntensity = 0f,
-                snowIntensity = 0.85f,
-                fogDensity = 0f,
-                cloudCoverFraction = 0.8f,
-                windSpeedKmh = 14f,
-                skyTopColor = androidx.compose.ui.graphics.Color(0xFF1E293B),
-                skyBottomColor = androidx.compose.ui.graphics.Color(0xFF94A3B8)
-            )
-            ConditionCategory.FOG -> baseParams.copy(
-                category = ConditionCategory.FOG,
-                hasLightning = false,
-                rainIntensity = 0f,
-                snowIntensity = 0f,
-                fogDensity = 0.85f,
-                cloudCoverFraction = 0.7f,
-                skyTopColor = androidx.compose.ui.graphics.Color(0xFF475569),
-                skyBottomColor = androidx.compose.ui.graphics.Color(0xFF94A3B8)
-            )
-            else -> baseParams
         }
     }
 }
