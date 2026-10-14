@@ -1,0 +1,113 @@
+<resources>
+    <string name="app_name">Salim Weather</string>
+
+    <!-- General & Navigation -->
+    <string name="menu_manage_locations">Manage Locations</string>
+    <string name="menu_refresh">Refresh Weather</string>
+    <string name="menu_units">Unit Preferences</string>
+    <string name="menu_notifications">Notifications</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_about">About Salim Weather</string>
+
+    <!-- Weather Cards -->
+    <string name="label_humidity">Humidity</string>
+    <string name="label_wind">Wind</string>
+    <string name="label_precipitation">Precipitation</string>
+    <string name="title_hourly_forecast">Hourly Forecast</string>
+    <string name="title_daily_forecast">10-Day Forecast</string>
+    <string name="title_weather_details">Weather Details</string>
+    <string name="title_air_quality">Air Quality</string>
+    <string name="title_sun_moon">Sun &amp; Daylight</string>
+
+    <!-- Details Labels -->
+    <string name="label_feels_like">Feels Like</string>
+    <string name="label_uv_index">UV Index</string>
+    <string name="label_pressure">Air Pressure</string>
+    <string name="label_visibility">Visibility</string>
+    <string name="label_wind_gusts">Wind Gusts</string>
+    <string name="label_sunrise">Sunrise</string>
+    <string name="label_sunset">Sunset</string>
+    <string name="label_daylight">Daylight</string>
+    <string name="label_now">Now</string>
+    <string name="label_today">Today</string>
+
+    <!-- Condition Pills -->
+    <string name="cond_sunny">Sunny</string>
+    <string name="cond_mostly_sunny">Mostly Sunny</string>
+    <string name="cond_clear_night">Clear Night</string>
+    <string name="cond_partly_cloudy">Partly Cloudy</string>
+    <string name="cond_cloudy">Mostly Cloudy</string>
+    <string name="cond_overcast">Overcast</string>
+    <string name="cond_foggy">Foggy</string>
+    <string name="cond_drizzle">Light Drizzle</string>
+    <string name="cond_rainy">It\'s Raining!</string>
+    <string name="cond_heavy_rain">Heavy Rain</string>
+    <string name="cond_thunderstorm">Thunderstorm</string>
+    <string name="cond_snowy">Snowing</string>
+    <string name="cond_freezing_rain">Freezing Rain</string>
+
+    <!-- Sentence Pools -->
+    <string name="sentence_rain_umbrella">Don\'t forget your umbrella!</string>
+    <string name="sentence_rain_now">It\'s raining! Stay dry out there.</string>
+    <string name="sentence_thunderstorm">Thunderstorms around, stay safe indoors.</string>
+    <string name="sentence_rain_incoming">Grab an umbrella, rain is on the way.</string>
+    <string name="sentence_clear_day">Clear skies! Perfect day for a walk.</string>
+    <string name="sentence_sunny_day">Sunny and pleasant out today.</string>
+    <string name="sentence_cloudy_mild">Cloudy but lovely. Enjoy your day!</string>
+    <string name="sentence_cold_chilly">Bundle up, it\'s chilly outside!</string>
+    <string name="sentence_hot_summer">Stay cool and hydrated today!</string>
+    <string name="sentence_windy">Breezy conditions today, hold onto your hat!</string>
+    <string name="sentence_snow">Snowy wonderland out there today.</string>
+    <string name="sentence_fog">Low visibility in fog, drive carefully.</string>
+
+    <!-- Air Quality -->
+    <string name="aqi_good">Good</string>
+    <string name="aqi_moderate">Moderate</string>
+    <string name="aqi_sensitive">Unhealthy for Sensitive Groups</string>
+    <string name="aqi_unhealthy">Unhealthy</string>
+    <string name="aqi_very_unhealthy">Very Unhealthy</string>
+    <string name="aqi_hazardous">Hazardous</string>
+
+    <!-- Location Management & Search -->
+    <string name="search_city_hint">Search city or location...</string>
+    <string name="current_location_label">Current Location</string>
+    <string name="saved_locations_header">Saved Locations</string>
+    <string name="no_search_results">No matching locations found.</string>
+    <string name="location_added">Location added</string>
+    <string name="location_removed">Location removed</string>
+    <string name="undo">Undo</string>
+
+    <!-- First Run / Onboarding -->
+    <string name="onboarding_title">Salim Weather</string>
+    <string name="onboarding_subtitle">Real-time forecasts, atmospheric scenes, and live meteorological precision powered by Open-Meteo.</string>
+    <string name="btn_use_current_location">Use My Current Location</string>
+    <string name="btn_search_manually">Search City Manually</string>
+    <string name="permission_rationale">Location access enables Salim Weather to detect your city and display live conditions automatically.</string>
+
+    <!-- Status & Stale -->
+    <string name="updated_just_now">Updated just now</string>
+    <string name="updated_min_ago">Updated %1$d min ago</string>
+    <string name="updated_hr_ago">Updated %1$d hr ago</string>
+    <string name="offline_cached_notice">Offline • Cached data</string>
+    <string name="error_loading_weather">Could not refresh weather. Check your connection.</string>
+    <string name="btn_retry">Retry</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_units_header">Measurement Units</string>
+    <string name="settings_temp_unit">Temperature</string>
+    <string name="settings_wind_unit">Wind Speed</string>
+    <string name="settings_precip_unit">Precipitation</string>
+    <string name="settings_pressure_unit">Pressure</string>
+    <string name="settings_time_format">Time Format</string>
+    <string name="settings_notifications_header">Alerts &amp; Updates</string>
+    <string name="settings_rain_notifications">Precipitation Notifications</string>
+    <string name="settings_rain_notifications_desc">Get notified when rain is expected in the next hours</string>
+    <string name="settings_attribution_header">Data Sources &amp; Attribution</string>
+    <string name="settings_attribution_text">Weather forecasts and air quality data by Open-Meteo.com under Creative Commons Attribution 4.0 International (CC BY 4.0).</string>
+    <string name="settings_about_header">About</string>
+    <string name="settings_version">Version 1.0.0 (Build 1)</string>
+    <string name="settings_clear_cache">Clear Weather Cache</string>
+    <string name="settings_cache_cleared">Weather cache cleared</string>
+    <string name="dialog_close">Close</string>
+</resources>

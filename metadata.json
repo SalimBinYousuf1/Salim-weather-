@@ -1,0 +1,6 @@
+{
+  "name": "Salim Weather",
+  "description": "Native Android weather app with live Open-Meteo forecasts, atmospheric visual scene engine, and frosted glass design.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
